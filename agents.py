@@ -110,9 +110,13 @@ class MinimaxAgent2(Agent):
         return evaluation
 
 
-def static_evaluation(state):
+def static_evaluation(state, maximizing_player):
+    # za crvenog brojimo svaku win_mask koja kad se & sa checkers_yel daje 0 (svaka pobeda koja nije nemoguca zbog vec postavljenih zutih zetona), a za zutog brojimo svaku win_mask koja kad se & sa checkers_red daje 0
     player_points = 0
     opponent_points = 0
+
+    score_red = 0
+    score_yellow = 0
 
     # print(state.win_masks)
     # print("red:" , state.checkers_red)
@@ -122,110 +126,24 @@ def static_evaluation(state):
     for mask in state.win_masks:
         red_match = state.checkers_red & mask
         yellow_match = state.checkers_yellow & mask
+
+        if red_match == 0: score_yellow += 1
+        if yellow_match == 0: score_red += 1
+
         red_missing_pieces = bin(mask).count('1') - bin(red_match).count('1')
         player_points += bin(red_match).count('1')
-
         yellow_missing_pieces = bin(mask).count('1') - bin(yellow_match).count('1')
         opponent_points += bin(yellow_match).count('1')
 
     evaluation = player_points - opponent_points
+
+    if maximizing_player:
+        return score_red
+    else:
+        return -1 * score_yellow
     # print(evaluation)
-    return evaluation
+    # return evaluation
 
-
-class MinimaxAgentSimple(Agent):
-
-    def get_chosen_column(self, state, max_depth):
-        # print(max_depth)
-        evaluation, column = self.minimax(state, max_depth, True)
-        print("Evaluation: ", evaluation)
-        return column
-
-    def minimax(self, state, depth, maximizing_player):
-
-        # print("in minimax" ,depth)
-
-        if depth == 0 or state.get_state_status() is not None:
-            # print("in minimax")
-            if maximizing_player:
-                return static_evaluation(state), None
-            else:
-                return -1 * static_evaluation(state), None
-
-        if maximizing_player:
-            max_eval = float('-inf')
-            max_column = None
-            possible_columns = state.get_possible_columns()
-            for column in possible_columns:
-                next_eval, _, = self.minimax(state.generate_successor_state(column), depth - 1, not maximizing_player)
-                if next_eval > max_eval:
-                    max_eval = next_eval
-                    max_column = column
-            # print("Max", max_eval, "Depth: " , depth)
-            return max_eval, max_column
-
-        else:
-            max_eval = float('inf')
-            max_column = None
-            possible_columns = state.get_possible_columns()
-            for column in possible_columns:
-                next_eval, _, = self.minimax(state.generate_successor_state(column), depth - 1, not maximizing_player)
-                if next_eval < max_eval:
-                    max_eval = next_eval
-                    max_column = column
-            # print("Min", max_eval, "Depth: " , depth)
-            return max_eval, max_column
-
-class MinimaxABAgentSimple(Agent):
-
-    def get_chosen_column(self, state, max_depth):
-        # print(max_depth)
-        _, column = self.minimax(state, max_depth, True, float('-inf'), float('inf'))
-        return column
-
-    def minimax(self, state, depth, maximizing_player, alfa, beta):
-
-        # print("in minimax" ,depth)
-
-        if depth == 0 or state.get_state_status() is not None:
-            # print("in minimax")
-            if maximizing_player:
-                return static_evaluation(state), None
-            else:
-                return static_evaluation(state), None
-
-        if maximizing_player:
-            max_eval = float('-inf')
-            max_column = None
-            possible_columns = state.get_possible_columns()
-            for column in possible_columns:
-                next_eval, _, = self.minimax(state.generate_successor_state(column), depth - 1, not maximizing_player,
-                                             alfa, beta)
-                if next_eval > max_eval:
-                    max_eval = next_eval
-                    max_column = column
-                alfa = max(alfa, max_eval)
-                if beta <= alfa:
-                    break
-
-            print("Max", max_eval, "Depth: ", depth)
-            return max_eval, max_column
-
-        else:
-            max_eval = float('inf')
-            max_column = None
-            possible_columns = state.get_possible_columns()
-            for column in possible_columns:
-                next_eval, _, = self.minimax(state.generate_successor_state(column), depth - 1, not maximizing_player,
-                                             alfa, beta)
-                if next_eval < max_eval:
-                    max_eval = next_eval
-                    max_column = column
-                beta = min(beta, max_eval)
-                if beta <= alfa:
-                    break
-            print("Min", max_eval, "Depth: ", depth)
-            return max_eval, max_column
 
 class MinimaxAgent(Agent):
 
@@ -242,15 +160,14 @@ class MinimaxAgent(Agent):
         possible_columns = state.get_possible_columns()
         for column in possible_columns:
             weight = get_weight(column)
-            node = (static_evaluation(state.generate_successor_state(column)), weight, state, column)
+            node = (
+            -1 * static_evaluation(state.generate_successor_state(column), maximizing_player) + depth, weight, state,
+            column)
             heapq.heappush(nodes, node)
 
         if depth == 0 or state.get_state_status() is not None:
             # print("in minimax")
-            if maximizing_player:
-                return static_evaluation(state), None
-            else:
-                return -1 * static_evaluation(state), None
+            return static_evaluation(state, maximizing_player), None
 
         if maximizing_player:
             max_eval = float('-inf')
@@ -273,6 +190,8 @@ class MinimaxAgent(Agent):
                     max_eval = next_eval
                     max_column = next_column
             return max_eval, max_column
+
+
 class MinimaxABAgent(Agent):
 
     def get_chosen_column(self, state, max_depth):
@@ -280,7 +199,7 @@ class MinimaxABAgent(Agent):
         _, column = self.minimax(state, max_depth, True, float('-inf'), float('inf'))
         return column
 
-    def minimax(self, state, depth, maximizing_player, alfa, beta ):
+    def minimax(self, state, depth, maximizing_player, alfa, beta):
 
         # print("in minimax" ,depth)
 
@@ -288,15 +207,15 @@ class MinimaxABAgent(Agent):
         possible_columns = state.get_possible_columns()
         for column in possible_columns:
             weight = get_weight(column)
-            node = (static_evaluation(state.generate_successor_state(column)), weight, state, column)
+            node = (
+                -1 * static_evaluation(state.generate_successor_state(column), maximizing_player) + depth, weight,
+                state,
+                column)
             heapq.heappush(nodes, node)
 
         if depth == 0 or state.get_state_status() is not None:
             # print("in minimax")
-            if maximizing_player:
-                return static_evaluation(state), None
-            else:
-                return -1 * static_evaluation(state), None
+            return static_evaluation(state, maximizing_player), None
 
         if maximizing_player:
             max_eval = float('-inf')
@@ -328,12 +247,19 @@ class MinimaxABAgent(Agent):
 
 
 def get_weight(column):
-    if column == 3: weight = 0
-    elif column == 2: weight = 1
-    elif column == 4: weight = 2
-    elif column == 1: weight = 3
-    elif column == 5: weight = 4
-    elif column == 0: weight = 5
-    elif column == 6: weight = 6
+    if column == 3:
+        weight = 0
+    elif column == 2:
+        weight = 1
+    elif column == 4:
+        weight = 2
+    elif column == 1:
+        weight = 3
+    elif column == 5:
+        weight = 4
+    elif column == 0:
+        weight = 5
+    elif column == 6:
+        weight = 6
 
     return weight
