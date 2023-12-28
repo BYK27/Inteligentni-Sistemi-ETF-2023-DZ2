@@ -29,92 +29,8 @@ class ExampleAgent(Agent):
         return columns[random.randint(0, len(columns) - 1)]
 
 
-class MinimaxAgent2(Agent):
-    def get_chosen_column(self, state, max_depth):
-        evaluation, column = self.minimax(state, max_depth, True)
-        return column if column is not None else state.get_possible_columns()[0]
-
-    def minimax(self, state, depth, maximizing_player):
-        if depth == 0 or state.is_terminal():
-            return self.static_evaluation(state, maximizing_player), None
-
-        nodes = self.add_nodes(state,
-                               maximizing_player)  # nodes to be evaluated, expanded in descending heuristic order
-
-        print("U minimaksu\n")
-
-        if maximizing_player:
-            max_evaluation = float('-inf')
-            max_column = None
-            while nodes:
-                current_evaluation, current_state, current_column = heapq.heappop(nodes)[1]
-                next_evaluation, next_state, next_column = self.minimax(current_state, depth - 1, not maximizing_player)
-                if next_evaluation > max_evaluation:
-                    max_evaluation = next_evaluation
-                    max_column = current_column
-            return max_evaluation, max_column
-
-        else:
-            min_evaluation = float('inf')
-            min_column = None
-            while nodes:
-                current_evaluation, current_state, current_column = heapq.heappop(nodes)[1]
-                next_evaluation, next_state, next_column = self.minimax(current_state, depth - 1, not maximizing_player)
-                if next_evaluation < min_evaluation:
-                    min_evaluation = next_evaluation
-                    min_column = current_column
-            return min_evaluation, min_column
-
-    def add_nodes(self, state, maximizing_player):
-        nodes = []  # node - evaluation, state, column
-        possible_columns = state.get_possible_columns()
-        print(possible_columns)
-        for column in possible_columns:
-            possible_state = state.generate_successor_state(column)
-            possible_evaluation = self.static_evaluation(possible_state, maximizing_player)
-            node = (possible_evaluation, possible_state, column)
-            heapq.heappush(nodes, node)
-        return nodes
-
-    # TODO: define the evaluation by the difference of tiles
-    # the lower the value the higher the priority
-    def static_evaluation(self, state, maximizing_player):
-
-        player_points = 0
-        opponent_points = 0
-
-        # print(state.win_masks)
-        # print("red:" , state.checkers_red)
-        # print("yellow:" , state.checkers_yellow ,"\n")
-
-        for mask in state.win_masks:
-
-            if maximizing_player is True and (state.checkers_red and mask) == mask:
-                return -100
-            elif maximizing_player is False and (state.checkers_yellow and mask) == mask:
-                return -100
-
-            red_match = state.checkers_red & mask
-            yellow_match = state.checkers_yellow & mask
-            # Count the number of missing pieces for red player
-            red_missing_pieces = bin(mask).count('1') - bin(red_match).count('1')
-            player_points += max(0, red_missing_pieces)  # Only add positive values
-
-            # Count the number of missing pieces for yellow player
-            yellow_missing_pieces = bin(mask).count('1') - bin(yellow_match).count('1')
-            opponent_points += max(0, yellow_missing_pieces)  # Only add positive values
-
-            # Calculate the difference in win counts
-        evaluation = -(player_points - opponent_points)
-        print(evaluation)
-        return evaluation
-
-
 def static_evaluation(state, maximizing_player):
     # za crvenog brojimo svaku win_mask koja kad se & sa checkers_yel daje 0 (svaka pobeda koja nije nemoguca zbog vec postavljenih zutih zetona), a za zutog brojimo svaku win_mask koja kad se & sa checkers_red daje 0
-    player_points = 0
-    opponent_points = 0
-
     score_red = 0
     score_yellow = 0
 
@@ -122,131 +38,203 @@ def static_evaluation(state, maximizing_player):
     # print("red:" , state.checkers_red)
     # print("yellow:" , state.checkers_yellow ,"\n")
 
+    if state.get_state_status() == State.RED:
+        return 1000 - bin(state.checkers_red).count('1')
+
+    elif state.get_state_status() == State.YEL:
+        return -1000 + bin(state.checkers_yellow).count('1')
+
     # points only count for winning positions
     for mask in state.win_masks:
         red_match = state.checkers_red & mask
         yellow_match = state.checkers_yellow & mask
 
+
         if red_match == 0: score_yellow += 1
         if yellow_match == 0: score_red += 1
 
-        red_missing_pieces = bin(mask).count('1') - bin(red_match).count('1')
-        player_points += bin(red_match).count('1')
-        yellow_missing_pieces = bin(mask).count('1') - bin(yellow_match).count('1')
-        opponent_points += bin(yellow_match).count('1')
+    return score_red - score_yellow
 
-    evaluation = player_points - opponent_points
+def obliteration_evaluation(state, maximizing_player):
+    score = 0
 
-    if maximizing_player:
-        return score_red
-    else:
-        return -1 * score_yellow
-    # print(evaluation)
-    # return evaluation
+    if state.get_state_status() == State.RED:
+        return 1000 - bin(state.checkers_red).count('1')
 
+    elif state.get_state_status() == State.YEL:
+        return -1000 + bin(state.checkers_yellow).count('1')
 
-class MinimaxAgent(Agent):
+    # poeni pobednickih pozicija
+    for mask in state.win_masks:
+        red_match = state.checkers_red & mask
+        yellow_match = state.checkers_yellow & mask
 
-    def get_chosen_column(self, state, max_depth):
-        # print(max_depth)
-        _, column = self.minimax(state, max_depth, True)
-        return column
+        # vise se racunaju potezi koji pobedjuju sa manje zetona
+        weight = len([bit for bit in bin(mask) if bit == '1'])
 
-    def minimax(self, state, depth, maximizing_player):
+        if red_match == 0:
+            score -= weight
+        if yellow_match == 0:
+            score += weight
 
-        # print("in minimax" ,depth)
-
-        nodes = []
-        possible_columns = state.get_possible_columns()
-        for column in possible_columns:
-            weight = get_weight(column)
-            node = (
-            -1 * static_evaluation(state.generate_successor_state(column), maximizing_player) + depth, weight, state,
-            column)
-            heapq.heappush(nodes, node)
-
-        if depth == 0 or state.get_state_status() is not None:
-            # print("in minimax")
-            return static_evaluation(state, maximizing_player), None
-
+    # PENALI
+    for mask in state.win_masks:
         if maximizing_player:
-            max_eval = float('-inf')
-            max_column = None
-
-            while nodes:
-                next_eval, _, next_state, next_column = heapq.heappop(nodes)
-                if next_eval > max_eval:
-                    max_eval = next_eval
-                    max_column = next_column
-            return max_eval, max_column
-
+            if (state.checkers_yellow & mask == 0) and (state.checkers_red & mask != mask):
+                score -= 5  # Penalize for unblocked opponent's win
         else:
-            max_eval = float('inf')
-            max_column = None
+            if (state.checkers_red & mask == 0) and (state.checkers_yellow & mask != mask):
+                score += 5  # Penalize for unblocked opponent's win
 
-            while nodes:
-                next_eval, _, next_state, next_column = heapq.heappop(nodes)
-                if next_eval < max_eval:
-                    max_eval = next_eval
-                    max_column = next_column
-            return max_eval, max_column
-
+    return score
 
 class MinimaxABAgent(Agent):
 
     def get_chosen_column(self, state, max_depth):
         # print(max_depth)
-        _, column = self.minimax(state, max_depth, True, float('-inf'), float('inf'))
+        if self.id == 0:
+            player = True
+        else:
+            player = False
+        _, column = self.minimax(state, max_depth, player, 0, float('-inf'), float('inf'))
         return column
 
-    def minimax(self, state, depth, maximizing_player, alfa, beta):
+    def minimax(self, state, depth, maximizing_player, current_depth, alfa, beta):
 
+        print("evaluation state ", state)
         # print("in minimax" ,depth)
-
-        nodes = []
-        possible_columns = state.get_possible_columns()
-        for column in possible_columns:
-            weight = get_weight(column)
-            node = (
-                -1 * static_evaluation(state.generate_successor_state(column), maximizing_player) + depth, weight,
-                state,
-                column)
-            heapq.heappush(nodes, node)
-
         if depth == 0 or state.get_state_status() is not None:
-            # print("in minimax")
             return static_evaluation(state, maximizing_player), None
 
         if maximizing_player:
+            nodes = []
+            possible_columns = state.get_possible_columns()
+            for column in possible_columns:
+                weight = -1 * get_weight(column)
+                new_state = state.generate_successor_state(column)
+                node = (
+                    static_evaluation(new_state, maximizing_player), weight,
+                    new_state,
+                    column)
+                nodes.append(node)
+
             max_eval = float('-inf')
             max_column = None
 
+            nodes = sorted(nodes, key=lambda x: (x[0], x[1]))
+            print("Player ", maximizing_player, nodes)
+
             while nodes:
-                next_eval, _, next_state, next_column = heapq.heappop(nodes)
+                current_node = nodes.pop()
+                _, _, state, column = current_node
+                print(current_node)
+                next_eval, next_column = self.minimax(state, depth - 1, not maximizing_player, current_depth + 1, alfa,
+                                                      beta)
                 if next_eval > max_eval:
                     max_eval = next_eval
-                    max_column = next_column
+                    max_column = column
+                # print("Max with value: ", max_eval, " at depth ", current_depth, "\n")
                 alfa = max(alfa, max_eval)
                 if beta <= alfa:
                     break
             return max_eval, max_column
 
         else:
-            max_eval = float('inf')
-            max_column = None
+            nodes = []
+            possible_columns = state.get_possible_columns()
+            for column in possible_columns:
+                weight = get_weight(column)
+                new_state = state.generate_successor_state(column)
+                node = (
+                    static_evaluation(new_state, maximizing_player), weight,
+                    new_state,
+                    column)
+                nodes.append(node)
+
+            min_eval = float('inf')
+            min_column = None
+            nodes = sorted(nodes, key=lambda x: (x[0], x[1]), reverse=True)
+            print("Player ", maximizing_player, nodes)
 
             while nodes:
-                next_eval, _, next_state, next_column = heapq.heappop(nodes)
-                if next_eval < max_eval:
-                    max_eval = next_eval
-                    max_column = next_column
-                beta = min(beta, max_eval)
+                current_node = nodes.pop()
+                _, _, state, column = current_node
+                print(current_node)
+                next_eval, next_column = self.minimax(state, depth - 1, not maximizing_player, current_depth + 1, alfa,
+                                                      beta)
+                if next_eval < min_eval:
+                    min_eval = next_eval
+                    min_column = column
+                # print("Min with value: ", min_eval, " at depth ", current_depth, "\n")
+                beta = min(beta, min_eval)
                 if beta <= alfa:
                     break
-            return max_eval, max_column
+            return min_eval, min_column
+
+
+class NegamaxABAgent(Agent):
+
+    def get_chosen_column(self, state, max_depth):
+        # print(max_depth)
+        if self.id == 0:
+            player = True
+        else:
+            player = False
+        _, column = self.negamax(state, max_depth, player, 0, float('-inf'), float('inf'))
+        return column
+
+    def negamax(self, state, depth, maximizing_player, current_depth, alfa, beta):
+
+        print("evaluation state ", state)
+        # print("in minimax" ,depth)
+        if depth == 0 or state.get_state_status() is not None:
+            if not maximizing_player: return -1 * static_evaluation(state, maximizing_player), None
+            return static_evaluation(state, maximizing_player), None
+
+        nodes = []
+        possible_columns = state.get_possible_columns()
+        for column in possible_columns:
+            if maximizing_player:
+                weight = -1 * get_weight(column)
+            else:
+                weight = get_weight(column)
+            new_state = state.generate_successor_state(column)
+            node = (
+                static_evaluation(new_state, maximizing_player), weight,
+                new_state,
+                column)
+            nodes.append(node)
+
+        max_eval = float('-inf')
+        max_column = None
+
+        if maximizing_player:
+            nodes = sorted(nodes, key=lambda x: (x[0], x[1]))
+        else:
+            nodes = sorted(nodes, key=lambda x: (x[0], x[1]), reverse=True)
+
+        print("Player ", maximizing_player, nodes)
+
+        while nodes:
+            current_node = nodes.pop()
+            _, _, state, column = current_node
+            print(current_node)
+            next_eval, next_column = self.negamax(state, depth - 1, not maximizing_player, current_depth + 1, -1 * beta,
+                                                  -1 * alfa)
+            next_eval *= -1
+            if next_eval > max_eval:
+                max_eval = next_eval
+                max_column = column
+            # print("Max with value: ", max_eval, " at depth ", current_depth, "\n")
+            alfa = max(alfa, max_eval)
+            if beta <= alfa:
+                break
+        return max_eval, max_column
 
 
 def get_weight(column):
+    weight = -1
+
     if column == 3:
         weight = 0
     elif column == 2:
@@ -263,3 +251,155 @@ def get_weight(column):
         weight = 6
 
     return weight
+
+
+class NegascoutAgent(Agent):
+    def get_chosen_column(self, state, max_depth):
+        # print(max_depth)
+        if self.id == 0:
+            player = True
+        else:
+            player = False
+        _, column = self.negamax(state, max_depth, player, 0, float('-inf'), float('inf'))
+        return column
+
+    def negamax(self, state, depth, maximizing_player, current_depth, alfa, beta):
+
+        print("evaluation state ", state)
+        # print("in minimax" ,depth)
+        if depth == 0 or state.get_state_status() is not None:
+            if not maximizing_player: return -1 * static_evaluation(state, maximizing_player), None
+            return static_evaluation(state, maximizing_player), None
+
+        nodes = []
+        possible_columns = state.get_possible_columns()
+        for column in possible_columns:
+            if maximizing_player:
+                weight = -1 * get_weight(column)
+            else:
+                weight = get_weight(column)
+            new_state = state.generate_successor_state(column)
+            node = (
+                static_evaluation(new_state, maximizing_player), weight,
+                new_state,
+                column)
+            nodes.append(node)
+
+        max_eval = float('-inf')
+        max_column = None
+
+        if maximizing_player:
+            nodes = sorted(nodes, key=lambda x: (x[0], x[1]))
+        else:
+            nodes = sorted(nodes, key=lambda x: (x[0], x[1]), reverse=True)
+
+        print("Player ", maximizing_player, nodes)
+
+        first_node = True
+
+        while nodes:
+            current_node = nodes.pop()
+            _, _, state, column = current_node
+            print(current_node)
+
+            if first_node:
+                next_eval, next_column = self.negamax(state, depth - 1, not maximizing_player, current_depth + 1, -1 * beta, -1 * alfa)
+                first_node = False
+            else:
+                next_eval, next_column = self.negamax(state, depth - 1, not maximizing_player, current_depth + 1, -1 * alfa - 1, -1 * alfa)
+                if alfa < -1 * next_eval < beta:
+                    next_eval, next_column = self.negamax(state, depth - 1, not maximizing_player, current_depth + 1,
+                                                          -1 * beta, -1 * alfa)
+
+            next_eval *= -1
+            if next_eval > max_eval:
+                max_eval = next_eval
+                max_column = column
+            # print("Max with value: ", max_eval, " at depth ", current_depth, "\n")
+            alfa = max(alfa, max_eval)
+            if beta <= alfa:
+                break
+        return max_eval, max_column
+
+
+class CompetativeAgent(Agent):
+    def get_chosen_column(self, state, max_depth):
+        # print(max_depth)
+        if self.id == 0:
+            player = True
+        else:
+            player = False
+        _, column = self.minimax(state, max_depth, player, 0, float('-inf'), float('inf'))
+        return column
+
+    def minimax(self, state, depth, maximizing_player, current_depth, alfa, beta):
+
+        print("evaluation state ", state)
+        # print("in minimax" ,depth)
+        if depth == 0 or state.get_state_status() is not None:
+            return obliteration_evaluation(state, maximizing_player), None
+
+        if maximizing_player:
+            nodes = []
+            possible_columns = state.get_possible_columns()
+            for column in possible_columns:
+                weight = -1 * get_weight(column)
+                new_state = state.generate_successor_state(column)
+                node = (
+                    obliteration_evaluation(new_state, maximizing_player), weight,
+                    new_state,
+                    column)
+                nodes.append(node)
+
+            max_eval = float('-inf')
+            max_column = None
+
+            nodes = sorted(nodes, key=lambda x: (x[0], x[1]))
+            print("Player ", maximizing_player, nodes)
+
+            while nodes:
+                current_node = nodes.pop()
+                _, _, state, column = current_node
+                print(current_node)
+                next_eval, next_column = self.minimax(state, depth - 1, not maximizing_player, current_depth + 1, alfa,
+                                                      beta)
+                if next_eval > max_eval:
+                    max_eval = next_eval
+                    max_column = column
+                # print("Max with value: ", max_eval, " at depth ", current_depth, "\n")
+                alfa = max(alfa, max_eval)
+                if beta <= alfa:
+                    break
+            return max_eval, max_column
+
+        else:
+            nodes = []
+            possible_columns = state.get_possible_columns()
+            for column in possible_columns:
+                weight = get_weight(column)
+                new_state = state.generate_successor_state(column)
+                node = (
+                    obliteration_evaluation(new_state, maximizing_player), weight,
+                    new_state,
+                    column)
+                nodes.append(node)
+
+            min_eval = float('inf')
+            min_column = None
+            nodes = sorted(nodes, key=lambda x: (x[0], x[1]), reverse=True)
+            print("Player ", maximizing_player, nodes)
+
+            while nodes:
+                current_node = nodes.pop()
+                _, _, state, column = current_node
+                print(current_node)
+                next_eval, next_column = self.minimax(state, depth - 1, not maximizing_player, current_depth + 1, alfa,
+                                                      beta)
+                if next_eval < min_eval:
+                    min_eval = next_eval
+                    min_column = column
+                # print("Min with value: ", min_eval, " at depth ", current_depth, "\n")
+                beta = min(beta, min_eval)
+                if beta <= alfa:
+                    break
+            return min_eval, min_column

@@ -1,0 +1,379 @@
+=== STEP 001 ===
+On move: RED
+Chosen column: 0
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+X _ _ _ _ _ _
+=== STEP 002 ===
+On move: YEL
+Chosen column: 3
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+X _ _ O _ _ _
+=== STEP 003 ===
+On move: RED
+Chosen column: 3
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ X _ _ _
+X _ _ O _ _ _
+=== STEP 004 ===
+On move: YEL
+Chosen column: 3
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+X _ _ O _ _ _
+=== STEP 005 ===
+On move: RED
+Chosen column: 3
+_ _ _ _ _ _ _
+_ _ _ _ _ _ _
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+X _ _ O _ _ _
+=== STEP 006 ===
+On move: YEL
+Chosen column: 3
+_ _ _ _ _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+X _ _ O _ _ _
+=== STEP 007 ===
+On move: RED
+Chosen column: 3
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+X _ _ O _ _ _
+=== STEP 008 ===
+On move: YEL
+Chosen column: 0
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+O _ _ X _ _ _
+X _ _ O _ _ _
+=== STEP 009 ===
+On move: RED
+Chosen column: 6
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+O _ _ X _ _ _
+X _ _ O _ _ X
+=== STEP 010 ===
+On move: YEL
+Chosen column: 2
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+O _ _ X _ _ _
+X _ O O _ _ X
+=== STEP 011 ===
+On move: RED
+Chosen column: 0
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+X _ _ O _ _ _
+O _ _ X _ _ _
+X _ O O _ _ X
+=== STEP 012 ===
+On move: YEL
+Chosen column: 4
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+X _ _ O _ _ _
+O _ _ X _ _ _
+X _ O O O _ X
+=== STEP 013 ===
+On move: RED
+Chosen column: 4
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+X _ _ O _ _ _
+O _ _ X X _ _
+X _ O O O _ X
+=== STEP 014 ===
+On move: YEL
+Chosen column: 4
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X _ _ _
+X _ _ O O _ _
+O _ _ X X _ _
+X _ O O O _ X
+=== STEP 015 ===
+On move: RED
+Chosen column: 4
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X X _ _
+X _ _ O O _ _
+O _ _ X X _ _
+X _ O O O _ X
+=== STEP 016 ===
+On move: YEL
+Chosen column: 2
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X X _ _
+X _ _ O O _ _
+O _ O X X _ _
+X _ O O O _ X
+=== STEP 017 ===
+On move: RED
+Chosen column: 2
+_ _ _ X _ _ _
+_ _ _ O _ _ _
+_ _ _ X X _ _
+X _ X O O _ _
+O _ O X X _ _
+X _ O O O _ X
+=== STEP 018 ===
+On move: YEL
+Chosen column: 4
+_ _ _ X _ _ _
+_ _ _ O O _ _
+_ _ _ X X _ _
+X _ X O O _ _
+O _ O X X _ _
+X _ O O O _ X
+=== STEP 019 ===
+On move: RED
+Chosen column: 2
+_ _ _ X _ _ _
+_ _ _ O O _ _
+_ _ X X X _ _
+X _ X O O _ _
+O _ O X X _ _
+X _ O O O _ X
+=== STEP 020 ===
+On move: YEL
+Chosen column: 2
+_ _ _ X _ _ _
+_ _ O O O _ _
+_ _ X X X _ _
+X _ X O O _ _
+O _ O X X _ _
+X _ O O O _ X
+=== STEP 021 ===
+On move: RED
+Chosen column: 1
+_ _ _ X _ _ _
+_ _ O O O _ _
+_ _ X X X _ _
+X _ X O O _ _
+O _ O X X _ _
+X X O O O _ X
+=== STEP 022 ===
+On move: YEL
+Chosen column: 2
+_ _ O X _ _ _
+_ _ O O O _ _
+_ _ X X X _ _
+X _ X O O _ _
+O _ O X X _ _
+X X O O O _ X
+=== STEP 023 ===
+On move: RED
+Chosen column: 5
+_ _ O X _ _ _
+_ _ O O O _ _
+_ _ X X X _ _
+X _ X O O _ _
+O _ O X X _ _
+X X O O O X X
+=== STEP 024 ===
+On move: YEL
+Chosen column: 1
+_ _ O X _ _ _
+_ _ O O O _ _
+_ _ X X X _ _
+X _ X O O _ _
+O O O X X _ _
+X X O O O X X
+=== STEP 025 ===
+On move: RED
+Chosen column: 1
+_ _ O X _ _ _
+_ _ O O O _ _
+_ _ X X X _ _
+X X X O O _ _
+O O O X X _ _
+X X O O O X X
+=== STEP 026 ===
+On move: YEL
+Chosen column: 1
+_ _ O X _ _ _
+_ _ O O O _ _
+_ O X X X _ _
+X X X O O _ _
+O O O X X _ _
+X X O O O X X
+=== STEP 027 ===
+On move: RED
+Chosen column: 1
+_ _ O X _ _ _
+_ X O O O _ _
+_ O X X X _ _
+X X X O O _ _
+O O O X X _ _
+X X O O O X X
+=== STEP 028 ===
+On move: YEL
+Chosen column: 5
+_ _ O X _ _ _
+_ X O O O _ _
+_ O X X X _ _
+X X X O O _ _
+O O O X X O _
+X X O O O X X
+=== STEP 029 ===
+On move: RED
+Chosen column: 5
+_ _ O X _ _ _
+_ X O O O _ _
+_ O X X X _ _
+X X X O O X _
+O O O X X O _
+X X O O O X X
+=== STEP 030 ===
+On move: YEL
+Chosen column: 5
+_ _ O X _ _ _
+_ X O O O _ _
+_ O X X X O _
+X X X O O X _
+O O O X X O _
+X X O O O X X
+=== STEP 031 ===
+On move: RED
+Chosen column: 5
+_ _ O X _ _ _
+_ X O O O X _
+_ O X X X O _
+X X X O O X _
+O O O X X O _
+X X O O O X X
+=== STEP 032 ===
+On move: YEL
+Chosen column: 6
+_ _ O X _ _ _
+_ X O O O X _
+_ O X X X O _
+X X X O O X _
+O O O X X O O
+X X O O O X X
+=== STEP 033 ===
+On move: RED
+Chosen column: 6
+_ _ O X _ _ _
+_ X O O O X _
+_ O X X X O _
+X X X O O X X
+O O O X X O O
+X X O O O X X
+=== STEP 034 ===
+On move: YEL
+Chosen column: 1
+_ O O X _ _ _
+_ X O O O X _
+_ O X X X O _
+X X X O O X X
+O O O X X O O
+X X O O O X X
+=== STEP 035 ===
+On move: RED
+Chosen column: 4
+_ O O X X _ _
+_ X O O O X _
+_ O X X X O _
+X X X O O X X
+O O O X X O O
+X X O O O X X
+=== STEP 036 ===
+On move: YEL
+Chosen column: 5
+_ O O X X O _
+_ X O O O X _
+_ O X X X O _
+X X X O O X X
+O O O X X O O
+X X O O O X X
+=== STEP 037 ===
+On move: RED
+Chosen column: 0
+_ O O X X O _
+_ X O O O X _
+X O X X X O _
+X X X O O X X
+O O O X X O O
+X X O O O X X
+=== STEP 038 ===
+On move: YEL
+Chosen column: 0
+_ O O X X O _
+O X O O O X _
+X O X X X O _
+X X X O O X X
+O O O X X O O
+X X O O O X X
+=== STEP 039 ===
+On move: RED
+Chosen column: 0
+X O O X X O _
+O X O O O X _
+X O X X X O _
+X X X O O X X
+O O O X X O O
+X X O O O X X
+=== STEP 040 ===
+On move: YEL
+Chosen column: 6
+X O O X X O _
+O X O O O X _
+X O X X X O O
+X X X O O X X
+O O O X X O O
+X X O O O X X
+=== STEP 041 ===
+On move: RED
+Chosen column: 6
+X O O X X O _
+O X O O O X X
+X O X X X O O
+X X X O O X X
+O O O X X O O
+X X O O O X X
+=== STEP 042 ===
+On move: YEL
+Chosen column: 6
+X O O X X O O
+O X O O O X X
+X O X X X O O
+X X X O O X X
+O O O X X O O
+X X O O O X X
+DRAW
